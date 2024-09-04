@@ -64,7 +64,7 @@ class IndexParser:
         if not missing_in_package and not extra_in_package:
             print("OK")
         else:
-            print("KO")
+            print("KOoo")
 
             if missing_in_package:
                 print("Folders or files missing in package:")
