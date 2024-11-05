@@ -81,8 +81,9 @@ class IndexParser:
         print(f"Extra count: {len(extra_in_package)}")
 
 # Example usage
-index_file_path = r"C:\Users\sally\OneDrive\Bureau\index.txt"
-package_path = r"C:\Users\sally\OneDrive\Bureau\A591-09626-0100000_08415_ELV_00412_No_OS\A591-09626-0100000"
+index_file_path = "/app/index.txt"  # Update to the mounted path in the container
+package_path = "/app/package"  # Update to the mounted path in the container
+
 
 parser = IndexParser(index_file_path, package_path)
 parser.compare_with_index()
