@@ -48,7 +48,7 @@ pipeline {
 
         stage('Post Build Actions') {
             steps {
-                echo 'Build, run with mounted volumes, '
+                echo 'Build, run with mounted  '
             }
         }
     }
