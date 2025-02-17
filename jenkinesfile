@@ -16,7 +16,7 @@ pipeline {
                         -Dsonar.projectKey=test ^  
                         -Dsonar.sources=. ^
                         -Dsonar.host.url=http://localhost:9000 ^
-                        -Dsonar.login=YOUR_SONARQUBE_TOKEN  
+                        -Dsonar.login=squ_fdc55c92864dfa526b22fe2bdda1c713489dcac5  
                     '''
                 }
             }
