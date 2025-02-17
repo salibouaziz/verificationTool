@@ -62,7 +62,7 @@ class IndexParser:
 
     def print_comparison_result(self, missing_in_package, extra_in_package):
         if not missing_in_package and not extra_in_package:
-            print("OKkkkkkkoookkkkkkk")
+            print("OKkk")
         else:
             print("KO")
 
