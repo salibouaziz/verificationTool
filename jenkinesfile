@@ -15,7 +15,7 @@ pipeline {
 
         stage('Run SonarQube Analysis') {
             steps {
-                withSonarQubeEnv(credentialsId: 'sonarqube') {
+                withSonarQubeEnv(sonarqube) {
                     script {
                         bat 'sonar-scanner -Dsonar.projectKey=test -Dsonar.host.url=%SONARQUBE_URL% -Dsonar.login=%SONAR_AUTH_TOKEN%'
                     }
