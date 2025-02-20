@@ -7,20 +7,7 @@ pipeline {
                 git url: 'https://github.com/salibouaziz/verificationTool.git'
             }
         }
-         stage('SonarQube Analysis') {
-            steps {
-                script {
-                    // Run SonarQube analysis using the SonarQube scanner (Windows version)
-                    bat '''
-                    sonar-scanner ^
-                        -Dsonar.projectKey=test ^  
-                        -Dsonar.sources=. ^
-                        -Dsonar.host.url=http://localhost:9000 ^
-                        -Dsonar.login=squ_fdc55c92864dfa526b22fe2bdda1c713489dcac5  
-                    '''
-                }
-            }
-        }
+     
         stage('Build Docker image') {
             steps {
                 script {
