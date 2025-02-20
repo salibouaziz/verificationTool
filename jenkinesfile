@@ -11,13 +11,28 @@ pipeline {
             }
         }
      
+    stage('Test SonarQube Connection') {
+            steps {
+                script {
+                    // Test connection to SonarQube using curl
+                    def sonarUrl = 'http://localhost:9000'
+                    def response = sh(script: "curl -s -o /dev/null -w '%{http_code}' ${sonarUrl}", returnStdout: true).trim()
 
+                    // Check if the response is 200 (OK)
+                    if (response == '200') {
+                        echo "SonarQube is accessible at ${sonarUrl}"
+                    } else {
+                        error "SonarQube connection failed with response code ${response}"
+                    }
+                }
+            }
+        }
 
         stage('Run SonarQube Analysis') {
             steps {
                 withSonarQubeEnv(sonarqube) {
                     script {
-                        bat 'sonar-scanner -Dsonar.projectKey=test -Dsonar.host.url=%SONARQUBE_URL% -Dsonar.login=%SONAR_AUTH_TOKEN%'
+                        bat 'sonar-scanner -Dsonar.projectKey=test -Dsonar.host.url=http://localhost:9000'
                     }
                 }
             }
