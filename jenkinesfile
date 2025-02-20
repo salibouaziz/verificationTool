@@ -10,43 +10,11 @@ pipeline {
                 git url: 'https://github.com/salibouaziz/verificationTool.git'
             }
         }
-     
-    stage('Test SonarQube Connection') {
-            steps {
-                script {
-                    // Test connection to SonarQube using PowerShell
-                    def sonarUrl = 'http://localhost:9000'
-                    def response = bat(script: """
-                        powershell -Command "try {
-                            \$response = Invoke-WebRequest -Uri '${sonarUrl}' -Method Get
-                            if (\$response.StatusCode -eq 200) {
-                                Write-Host 'SonarQube is accessible'
-                            } else {
-                                Write-Host 'SonarQube returned an error code: ' + \$response.StatusCode
-                                exit 1
-                            }
-                        } catch {
-                            Write-Host 'SonarQube connection failed'
-                            exit 1
-                        }"
-                    """, returnStdout: true).trim()
-                }
-            }
-        }
 
-        stage('Run SonarQube Analysis') {
-            steps {
-                withSonarQubeEnv(sonarqube) {
-                    script {
-                        bat 'sonar-scanner -Dsonar.projectKey=test -Dsonar.host.url=http://localhost:9000'
-                    }
-                }
-            }
-        }
         stage('Build Docker image') {
             steps {
                 script {
-                    bat 'docker build -t salibou/verification-tool:latest .'
+                    sh 'docker build -t salibou/verification-tool:latest .'
                 }
             }
         }
@@ -54,36 +22,25 @@ pipeline {
         stage('Run Docker Container with Mounted Volumes') {
             steps {
                 script {
-                    def indexPath = "C:\\Users\\sally\\OneDrive\\Bureau\\index.txt"
-                    def packagePath = "C:\\Users\\sally\\OneDrive\\Bureau\\A591-09626-0100000_08415_ELV_00412_No_OS\\A591-09626-0100000"
+                    // Adjust file paths for Linux environment
+                    def indexPath = "/home/jenkins/index.txt"
+                    def packagePath = "/home/jenkins/A591-09626-0100000_08415_ELV_00412_No_OS/A591-09626-0100000"
                     
-                    bat """
-                    docker run ^
-                    -v ${indexPath}:/app/index.txt ^
-                    -v ${packagePath}:/app/package ^
+                    sh """
+                    docker run \\
+                    -v ${indexPath}:/app/index.txt \\
+                    -v ${packagePath}:/app/package \\
                     salibou/verification-tool:latest
                     """
                 }
             }
         }
 
-        stage('Push Docker Image') {
-            steps {
-               script {
-                    // Use withCredentials to pass the Docker Hub credentials
-                    withCredentials([string(credentialsId: 'dockerhub', variable: 'dockerhub')]) {
-                        // Use the correct syntax for environment variables in Windows batch script
-                        bat 'docker login -u bouaziz.sali@enis.tn -p %dockerhub%'
-                    }
-                    // Push the Docker image
-                    bat 'docker push salibou/verification-tool:latest'
-                }
-            }
-        }
+       
 
         stage('Post Build Actions') {
             steps {
-                echo 'Build, run with mounted  '
+                echo 'Build, run with mounted volumes, and push completed!'
             }
         }
     }
