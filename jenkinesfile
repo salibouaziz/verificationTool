@@ -14,16 +14,22 @@ pipeline {
     stage('Test SonarQube Connection') {
             steps {
                 script {
-                    // Test connection to SonarQube using PowerShell instead of bash
+                    // Test connection to SonarQube using PowerShell
                     def sonarUrl = 'http://localhost:9000'
-                    def response = bat(script: "powershell -Command \"Invoke-WebRequest -Uri ${sonarUrl} -Method Get -UseBasicPowershell | Select-Object -ExpandProperty StatusCode\"", returnStdout: true).trim()
-
-                    // Check if the response is 200 (OK)
-                    if (response == '200') {
-                        echo "SonarQube is accessible at ${sonarUrl}"
-                    } else {
-                        error "SonarQube connection failed with response code ${response}"
-                    }
+                    def response = bat(script: """
+                        powershell -Command "try {
+                            \$response = Invoke-WebRequest -Uri '${sonarUrl}' -Method Get
+                            if (\$response.StatusCode -eq 200) {
+                                Write-Host 'SonarQube is accessible'
+                            } else {
+                                Write-Host 'SonarQube returned an error code: ' + \$response.StatusCode
+                                exit 1
+                            }
+                        } catch {
+                            Write-Host 'SonarQube connection failed'
+                            exit 1
+                        }"
+                    """, returnStdout: true).trim()
                 }
             }
         }
