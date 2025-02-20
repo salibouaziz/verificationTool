@@ -1,6 +1,9 @@
 pipeline {
     agent any
-
+    environment {
+        SONARQUBE_URL = 'http://localhost:9000' 
+        SONAR_AUTH_TOKEN = credentials('sonarqube')
+    }
     stages {
         stage('Checkout') {
             steps {
@@ -8,6 +11,17 @@ pipeline {
             }
         }
      
+
+
+        stage('Run SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv(credentialsId: 'sonarqube') {
+                    script {
+                        bat 'sonar-scanner -Dsonar.projectKey=test -Dsonar.host.url=%SONARQUBE_URL% -Dsonar.login=%SONAR_AUTH_TOKEN%'
+                    }
+                }
+            }
+        }
         stage('Build Docker image') {
             steps {
                 script {
